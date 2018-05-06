@@ -1,0 +1,39 @@
+#!/bin/sh -ex
+
+export PKGDEST="$(pwd)/build/packages"
+export SRCDEST="$(pwd)/build/sources"
+
+main() {
+  while read -r package; do
+    build_package "${package}"
+  done < packages.txt
+
+  build_repo "$1"
+}
+
+build_package() {
+  local package="$1"
+
+  mkdir -p "build/pkgbuilds/${package}"
+  wget --output-document="build/pkgbuilds/${package}/PKGBUILD" \
+    "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=${package}"
+
+  mkdir -p \
+    "${PKGDEST}" \
+    "${SRCDEST}"
+  (cd "build/pkgbuilds/${package}" &&
+    makepkg \
+      --clean \
+      --force \
+      --syncdeps)
+}
+
+build_repo() {
+  local repository=$1
+  mkdir -p build/repo
+  repo-add --new --remove \
+    "build/repo/${repository}.db.tar.xz" \
+    build/packages/*
+}
+
+main "$@"
