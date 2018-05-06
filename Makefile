@@ -11,12 +11,12 @@ repo: $(REPO_DB)
 
 $(REPO_DB): build-repo packages.txt
 	docker run \
-		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
 		--name=arch-repo-builder \
-		--rm \
 		--tty \
 			alexandrecarlton/arch-repo-builder \
 			./build-repo $(REPOSITORY)
+	docker cp arch-repo-builder:/home/builduser/build .
+	docker rm arch-repo-builder
 
 build-image:
 	docker build \
