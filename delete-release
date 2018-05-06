@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+# Deletes a GitHub release using a tag.
+
+API=https://api.github.com
+
+main() {
+  local tag="$1"
+  local release_url
+  release_url="$(get_release_url "${tag}")"
+  curl -H "Authorization: token ${GITHUB_TOKEN}" -X DELETE "${release_url}"
+}
+
+get_release_url() {
+  curl \
+    -H "Authorization: token ${GITHUB_TOKEN}" \
+    $API/repos/AlexandreCarlton/arch-on-github/releases/tags/latest \
+  | jq '.url'
+}
+
+main "$@"
