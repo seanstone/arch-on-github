@@ -12,5 +12,5 @@ To use this "repository", include the following in your `/etc/pacman.conf`:
 ```conf
 [github]
 SigLevel = Optional TrustAll
-Server = https://github.com/AlexandreCarlton/arch-on-github/releases/latest
+Server = https://github.com/AlexandreCarlton/arch-on-github/releases/download/latest
 ```
