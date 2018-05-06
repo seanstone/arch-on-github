@@ -1,0 +1,26 @@
+language: generic
+
+services:
+  - docker
+sudo: required
+
+before_script:
+  - make build-image
+
+script:
+  - make
+
+before_deploy:
+  - git config --local user.name "Alexandre Carlton"
+  - git config --local user.email "acar7163@uni.sydney.edu.au"
+  - git tag "$(date +%Y-%m-%dT%H:%M:%S)_$(git log --format=%h -1)"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ihd7IqjZRjFCsWOfkOqgpHOJzhO/7r3Alkxva2QHnaL8kwuRNF2+ngiaqNh2VZWG4KEtoh+C6Q4V0fRjfKM6NNZAiA7e9rDrq0lM+ZzFoNbLxofmr1XHSgmqyjmGKJC8OpuDof+sHmmvjiDpjYf87fqL0JkEeuqmYjZGrT0Q3EF2p2PDgl36Of8i7/ULAVodxRVcT+Hk/WnyNo+eL4+9fq4GWnr65kAesF35IKKSOFoAsX4nbiRIt7iv3WhzGIQouYL1uZhYR6ZgtS/2reDdt47Vl3FKgbVVTf1pDoxyv8fHfJgXSuYMq0mLRrpsvmop24bKS9d1/sjhwQX1MebsncSvBiTHBorNH3sZwMyWjqdf7/Vr4tkbUDp2a4wb1UpYnR3N9bExgKdls5iRLDGiL00ykQjaRtiUEjd58Eq/TiuCEOkCTuweTjB+nAbHakXnmfpKyjNjhDISZM1dMIPlSYJaHq333+9f8hrpwEecTqm1eglyUoL2XWf2STQtd5hPWelxk0GjvMSRp9K1hh3R1Pcg88CnSKvMYetYFgTvLMe7bpsHYNwnl0BPVJuJyTrIK9E174aaQIZyChXPXfLuWuGEXmXOnNwuFNCt0ovQwffcGH8oxUfFoOaZv0yOd3orn5Bmprv+UY4G/bG5dMrbdWcn1UaWHMu3sHbRep4xGfA=
+  file: repo/*
+  file_glob: true
+  skip_cleanup: true
+  on:
+    repo: AlexandreCarlton/arch-on-github
