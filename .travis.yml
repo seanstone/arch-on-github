@@ -15,7 +15,7 @@ before_deploy:
   - git config --local user.email "acar7163@uni.sydney.edu.au"
   - git tag -f latest
   # Delete the (previous) latest release, since Travis will not update the packages otherwise.
-  - curl -H "Authorization: token ${GITHUB_TOKEN}" -X DELETE https://api.github.com/repos/AlexandreCarlton/arch-on-github/releases/latest
+  - 'curl -H "Authorization: token ${GITHUB_TOKEN}" -X DELETE https://api.github.com/repos/AlexandreCarlton/arch-on-github/releases/latest'
 
 deploy:
   provider: releases
