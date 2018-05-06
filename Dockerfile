@@ -17,6 +17,9 @@ RUN pacman \
       --clean \
       --noconfirm
 
-RUN useradd builduser && \
+RUN useradd --create-home builduser && \
     echo 'builduser ALL=(ALL) NOPASSWD: ALL' \
     | EDITOR='tee -a' visudo
+
+USER builduser
+WORKDIR /home/builduser

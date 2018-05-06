@@ -15,8 +15,6 @@ $(REPO_DB): build-repo packages.txt
 		--name=arch-repo-builder \
 		--rm \
 		--tty \
-		--user=builduser \
-		--workdir=/home/builduser \
 			alexandrecarlton/arch-repo-builder \
 			./build-repo $(REPOSITORY)
 
