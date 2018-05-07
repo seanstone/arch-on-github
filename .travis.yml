@@ -13,7 +13,6 @@ script:
 before_deploy:
   - git config --local user.name "Alexandre Carlton"
   - git config --local user.email "acar7163@uni.sydney.edu.au"
-  # TODO: May want to delete the previous tag too if this doesn't work.
   - git tag -f latest
   # Delete the (previous) latest release, since Travis will not update the packages otherwise.
   #- make delete-latest
@@ -21,6 +20,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
+  file: repo/*
   file_glob: true
   skip_cleanup: true
   on:
