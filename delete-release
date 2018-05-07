@@ -8,6 +8,7 @@ main() {
   local tag="$1"
   local release_url
   release_url="$(get_release_url "${tag}")"
+  echo "release url is ${release_url}."
   curl -H "Authorization: token ${GITHUB_TOKEN}" -X DELETE "${release_url}"
 }
 
@@ -16,7 +17,7 @@ get_release_url() {
   curl \
     -H "Authorization: token ${GITHUB_TOKEN}" \
     "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}" \
-  | jq '.[].url'
+  | tee | jq '.[].url'
 }
 
 main "$@"
