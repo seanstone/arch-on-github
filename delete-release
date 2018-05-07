@@ -10,18 +10,19 @@ main() {
   release_url="$(get_release_url "${tag}")"
   echo "release url is ${release_url}."
   curl \
-    -H "Content-Type: application/json" \
-    --user="AlexandreCarlton:${GITHUB_TOKEN}" \
-    -X DELETE \
-    "${release_url}"
+    -H "Authorization: token ${GITHUB_TOKEN}" \
+    -X DELETE "${release_url}"
 }
 
 get_release_url() {
   local tag="$1"
   curl \
-    -H "Content-Type: application/json" \
-    --user="AlexandreCarlton:${GITHUB_TOKEN}" \
+    -H "Authorization: token ${GITHUB_TOKEN}" \
     "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}"
 }
+
+if [ -z "${GITHUB_TOKEN}" ]; then
+  echo 'Environment variable GITHUB_TOKEN is empty.'
+fi
 
 main "$@"
