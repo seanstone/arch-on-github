@@ -16,7 +16,7 @@ before_deploy:
   # TODO: May want to delete the previous tag too if this doesn't work.
   - git tag -f latest
   # Delete the (previous) latest release, since Travis will not update the packages otherwise.
-  - make delete-latest
+  #- make delete-latest
 
 deploy:
   provider: releases
