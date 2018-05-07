@@ -11,6 +11,7 @@ RUN pacman \
       binutils \
       curl \
       fakeroot \
+      jq \
       sudo \
       wget && \
     pacman \
