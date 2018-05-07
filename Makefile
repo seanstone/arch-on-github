@@ -25,6 +25,15 @@ build-image:
 		.
 .PHONY: build-image
 
+delete-latest:
+	docker run \
+		--name=arch-repo-builder \
+		--rm \
+		--tty \
+			alexandrecarlton/arch-repo-builder \
+			./delete-release latest
+	docker
+
 clean:
 	rm -rf build repo
 .PHONY: clean

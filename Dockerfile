@@ -9,6 +9,7 @@ RUN pacman \
       --noconfirm \
       --sync \
       binutils \
+      curl \
       fakeroot \
       sudo \
       wget && \

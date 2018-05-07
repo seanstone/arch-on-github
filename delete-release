@@ -12,6 +12,7 @@ main() {
 }
 
 get_release_url() {
+  local tag="$1"
   curl \
     -H "Authorization: token ${GITHUB_TOKEN}" \
     "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}" \
