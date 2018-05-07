@@ -27,6 +27,7 @@ build-image:
 
 delete-latest:
 	docker run \
+		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
 		--name=arch-repo-builder \
 		--rm \
 		--tty \
