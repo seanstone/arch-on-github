@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -ex
 
 # Deletes a GitHub release using a tag.
 
@@ -16,8 +16,7 @@ get_release_url() {
   local tag="$1"
   curl \
     -H "Authorization: token ${GITHUB_TOKEN}" \
-    "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}" \
-  | tee | jq '.[].url'
+    "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}"
 }
 
 main "$@"
