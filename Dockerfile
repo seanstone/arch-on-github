@@ -12,6 +12,7 @@ RUN pacman \
       curl \
       fakeroot \
       jq \
+      openssl \
       sudo \
       wget && \
     pacman \
