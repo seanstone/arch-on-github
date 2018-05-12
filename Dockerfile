@@ -11,9 +11,11 @@ RUN pacman \
       binutils \
       curl \
       fakeroot \
+      gcc \
       jq \
       make \
       openssl \
+      pkg-config \
       sudo && \
     pacman \
       --sync \
