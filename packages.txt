@@ -1,2 +1,14 @@
 aura-bin
+discord
+dropbox
+gohufont
+google-chrome
+ldm
 osquery-bin
+siji-git
+skypeforlinux-stable-bin
+spotify
+visual-studio-code-bin
+trizen
+ttf-mac-fonts
+ttf-ms-fonts
