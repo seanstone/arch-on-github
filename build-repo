@@ -14,14 +14,14 @@ main() {
 build_package() {
   local package="$1"
 
-  mkdir -p "build/pkgbuilds/${package}"
-  wget --output-document="build/pkgbuilds/${package}/PKGBUILD" \
-    "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=${package}"
+  mkdir -p "build/snapshots"
+  curl https://aur.archlinux.org/cgit/aur.git/snapshot/${package}.tar.gz \
+    | tar --extract --gzip --verbose --directory='build/snapshots'
 
   mkdir -p \
     "${PKGDEST}" \
     "${SRCDEST}"
-  (cd "build/pkgbuilds/${package}" &&
+  (cd "build/snapshots/${package}" &&
     makepkg \
       --clean \
       --force \

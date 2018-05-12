@@ -13,8 +13,7 @@ RUN pacman \
       fakeroot \
       jq \
       openssl \
-      sudo \
-      wget && \
+      sudo && \
     pacman \
       --sync \
       --clean \
