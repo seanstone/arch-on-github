@@ -25,6 +25,7 @@ build_package() {
     makepkg \
       --clean \
       --force \
+      --noconfirm \
       --syncdeps)
 }
 
