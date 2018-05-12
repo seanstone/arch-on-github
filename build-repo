@@ -49,7 +49,7 @@ get_dependencies() {
   local package="$1"
   (cd "build/snapshots/${package}" &&
     bash -c 'source PKGBUILD && echo ${depends[@]} ${makedepends[@]}') \
-    | sed 's/>.*//'
+    | sed -r 's/>[^ ]+//g'
 }
 
 package_in_official_repo() {
