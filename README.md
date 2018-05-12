@@ -6,7 +6,7 @@ An experiment to create an Arch custom repository, building packages from the
 AUR and hosting them via [GitHub Releases](https://help.github.com/articles/about-releases/).
 
 It uses [Travis Cron Jobs](https://docs.travis-ci.com/user/cron-jobs/) to
-re-build these packages every week.
+re-build these packages every day.
 
 ## Usage
 

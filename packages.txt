@@ -4,6 +4,7 @@ gohufont
 google-chrome
 ldm
 osquery-bin
+nix
 siji-git
 skypeforlinux-stable-bin
 spotify
