@@ -9,9 +9,8 @@ main() {
   local release_url
   release_url="$(get_release_url "${tag}")"
   echo "release url is ${release_url}."
-  curl \
-    -H "Authorization: token ${GITHUB_TOKEN}" \
-    -X DELETE "${release_url}"
+  delete_release "${release_url}"
+  delete_remote_tag "${tag}"
 }
 
 get_release_url() {
@@ -20,6 +19,22 @@ get_release_url() {
     -H "Authorization: token ${GITHUB_TOKEN}" \
     "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}" \
   | jq --raw-output '.url'
+}
+
+delete_release() {
+  local release_url="$1"
+  curl \
+    -X DELETE \
+    -H "Authorization: token ${GITHUB_TOKEN}" \
+    "${release_url}"
+}
+
+delete_remote_tag() {
+  local tag="$1"
+  curl \
+    -X DELETE \
+    -H "Authorization: token ${GITHUB_TOKEN}" \
+    "${API}/repos/AlexandreCarlton/arch-on-github/git/refs/tags/${tag}"
 }
 
 if [ -z "${GITHUB_TOKEN}" ]; then
