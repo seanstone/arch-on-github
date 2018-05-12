@@ -15,6 +15,7 @@ RUN pacman \
       jq \
       make \
       openssl \
+      patch \
       pkg-config \
       sudo && \
     pacman \
