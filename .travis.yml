@@ -14,7 +14,7 @@ before_deploy:
   - git config --local user.name "Alexandre Carlton"
   - git config --local user.email "acar7163@uni.sydney.edu.au"
 
-  - git tag -d latest
+  - git tag -d $(git tag)
   # Delete the (previous) latest release, since Travis will not update the packages otherwise.
   - make delete-latest
 
