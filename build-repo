@@ -44,6 +44,7 @@ build_package() {
       --syncdeps)
 }
 
+# TODO: Remove versions (e.g. X>=Y)
 get_dependencies() {
   local package="$1"
   (cd "build/snapshots/${package}" &&
