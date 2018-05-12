@@ -19,7 +19,7 @@ get_release_url() {
   curl \
     -H "Authorization: token ${GITHUB_TOKEN}" \
     "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}" \
-  | jq '.url'
+  | jq --raw-output '.url'
 }
 
 if [ -z "${GITHUB_TOKEN}" ]; then
