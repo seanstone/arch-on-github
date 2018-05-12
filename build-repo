@@ -47,7 +47,7 @@ build_package() {
 get_dependencies() {
   local package="$1"
   (cd "build/snapshots/${package}" &&
-    bash -c 'source PKGBUILD && echo ${depends[@]}')
+    bash -c 'source PKGBUILD && echo ${depends[@]} ${makedepends[@]}')
 }
 
 package_in_official_repo() {
