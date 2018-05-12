@@ -1,5 +1,4 @@
 aura-bin
-discord
 dropbox
 gohufont
 google-chrome
