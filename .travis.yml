@@ -13,7 +13,6 @@ script:
 before_deploy:
   - git config --local user.name "Alexandre Carlton"
   - git config --local user.email "acar7163@uni.sydney.edu.au"
-  - git remote set-url origin https://AlexandreCarlton:$GITHUB_TOKEN@github.com/AlexandreCarlton/arch-on-github.git
   - git tag -f latest
   # Delete the (previous) latest release, since Travis will not update the packages otherwise.
   - make delete-latest

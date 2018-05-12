@@ -27,6 +27,7 @@ build-image:
 
 delete-latest:
 	docker run \
+		--env=GITHUB_TOKEN=$(GITHUB_TOKEN) \
 		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
 		--name=arch-repo-builder \
 		--rm \
