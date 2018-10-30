@@ -17,6 +17,8 @@ RUN pacman \
       openssl \
       patch \
       pkg-config \
+      bison \
+      flex \
       sudo && \
     pacman \
       --sync \
