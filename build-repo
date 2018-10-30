@@ -28,8 +28,10 @@ build_package() {
   done
 
   for dependency in $(get_dependencies "${package}"); do
-    if ! package_in_official_repo "$dependency"; then
-      build_package "${dependency}"
+    if ! pacman -Qi "$dependency" > /dev/null; then
+      if ! package_in_official_repo "$dependency"; then
+        build_package "${dependency}"
+      fi
     fi
   done
 
