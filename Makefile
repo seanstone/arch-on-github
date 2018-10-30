@@ -13,7 +13,7 @@ $(REPO_DB): build-repo packages.txt
 	docker run \
 		--name=arch-repo-builder \
 		--tty \
-			alexandrecarlton/arch-repo-builder \
+			seanstone/arch-repo-builder \
 			./build-repo $(REPOSITORY)
 	docker cp arch-repo-builder:/home/builduser/build .
 	docker rm arch-repo-builder
@@ -21,7 +21,7 @@ $(REPO_DB): build-repo packages.txt
 build-image:
 	docker build \
 		--pull \
-		--tag=alexandrecarlton/arch-repo-builder \
+		--tag=seanstone/arch-repo-builder \
 		.
 .PHONY: build-image
 
@@ -32,7 +32,7 @@ delete-latest:
 		--name=arch-repo-builder \
 		--rm \
 		--tty \
-			alexandrecarlton/arch-repo-builder \
+			seanstone/arch-repo-builder \
 			./delete-release latest
 	docker
 

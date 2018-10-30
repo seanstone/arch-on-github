@@ -19,7 +19,7 @@ get_release_url() {
   local tag="$1"
   curl \
     -H "Authorization: token ${GITHUB_TOKEN}" \
-    "${API}/repos/AlexandreCarlton/arch-on-github/releases/tags/${tag}" \
+    "${API}/repos/seanstone/arch-on-github/releases/tags/${tag}" \
   | jq --raw-output '.url'
 }
 
@@ -36,7 +36,7 @@ delete_remote_tag() {
   curl \
     -X DELETE \
     -H "Authorization: token ${GITHUB_TOKEN}" \
-    "${API}/repos/AlexandreCarlton/arch-on-github/git/refs/tags/${tag}"
+    "${API}/repos/seanstone/arch-on-github/git/refs/tags/${tag}"
 }
 
 if [ -z "${GITHUB_TOKEN}" ]; then
