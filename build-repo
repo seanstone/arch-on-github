@@ -41,7 +41,8 @@ build_package() {
       --clean \
       --force \
       --noconfirm \
-      --syncdeps)
+      --syncdeps && \
+    sudo pacman -U ${package}*.pkg.tar.xz)
 }
 
 # TODO: Remove versions (e.g. X>=Y)
