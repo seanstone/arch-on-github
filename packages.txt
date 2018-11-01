@@ -7,4 +7,6 @@ libbladerf-git
 gnuradio-osmosdr-gqrx-git
 gqrx-git
 qwt
+soapysdr-git
+nlohmann-json
 pothos-git
