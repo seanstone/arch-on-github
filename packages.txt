@@ -6,4 +6,5 @@ gnuradio-iio-git
 libbladerf-git
 gnuradio-osmosdr-gqrx-git
 gqrx-git
+qwt
 pothos-git
