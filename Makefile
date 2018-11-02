@@ -9,6 +9,8 @@ image:
 
 .PHONY: container
 container:
+	mkdir -p build
+	chmod 777 build
 	docker run -td \
 	--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
 	--name=$(DOCKER_CONTAINER) $(DOCKER_IMAGE)
