@@ -4,20 +4,22 @@ services:
   - docker
 sudo: required
 
+before_install:
+  - sudo apt-get install -y jq
+
 before_script:
-  - make build-image
+  - make image
+  - make container
 
 script:
-  - make
+  - make repo
 
 before_deploy:
   - git config --local user.name "En Shih"
   - git config --local user.email "seanstone5923@gmail.com"
-
   - git tag -d $(git tag)
   # Delete the (previous) latest release, since Travis will not update the packages otherwise.
-  - make delete-latest
-
+  - ./delete-release latest
   - git tag latest
 
 deploy:

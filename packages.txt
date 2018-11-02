@@ -1,4 +1,3 @@
-gnuradio
 rtl-sdr-git
 libiio-git
 libad9361-iio-git
@@ -6,7 +5,6 @@ gnuradio-iio-git
 libbladerf-git
 gnuradio-osmosdr-gqrx-git
 gqrx-git
-qwt
 soapysdr-git
 nlohmann-json
 pothos-git

@@ -1,0 +1,68 @@
+#!/bin/sh -ex
+
+export PKGDEST="$(pwd)/build/packages"
+export SRCDEST="$(pwd)/build/sources"
+
+build_package() {
+  local package="$1"
+
+  if [ -d "build/snapshots/${package}" ]; then
+    echo "Already built package ${package}, skipping..."
+    return
+  fi
+
+  mkdir -p "build/snapshots"
+  curl "https://aur.archlinux.org/cgit/aur.git/snapshot/${package}.tar.gz" \
+    | tar --extract --gzip --verbose --directory='build/snapshots'
+
+  for pgp_key in $(get_pgp_keys "${package}"); do
+    gpg --recv-keys "${pgp_key}"
+  done
+
+  for dependency in $(get_dependencies "${package}"); do
+    if ! pacman -Qi "$dependency" > /dev/null; then
+      if package_in_official_repo "$dependency"; then
+        sudo sh -c "pacman --noconfirm -S ${dependency}"
+      else
+        build_package "${dependency}"
+        install_package "${dependency}"
+      fi
+    fi
+  done
+
+  mkdir -p \
+    "${PKGDEST}" \
+    "${SRCDEST}"
+  (cd "build/snapshots/${package}" &&
+    makepkg \
+      --clean \
+      --force \
+      --noconfirm \
+      --syncdeps)
+}
+
+# TODO: Remove versions (e.g. X>=Y)
+get_dependencies() {
+  local package="$1"
+  (cd "build/snapshots/${package}" &&
+    bash -c 'source PKGBUILD && echo ${depends[@]} ${makedepends[@]}') \
+    | sed --regexp-extended 's/>[^ ]+//g'
+}
+
+package_in_official_repo() {
+  local package="$1"
+  pacman --sync --search "^${package}$" > /dev/null
+}
+
+get_pgp_keys() {
+  local package="$1"
+  (cd "build/snapshots/${package}" &&
+    bash -c 'source PKGBUILD && echo ${validpgpkeys[@]}')
+}
+
+install_package() {
+  local package="$1"
+  sudo sh -c "pacman --noconfirm -U build/packages/${package}-*.pkg.tar.xz"
+}
+
+build_package "$@"

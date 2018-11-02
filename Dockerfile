@@ -1,18 +1,11 @@
 FROM base/archlinux:latest
 
-RUN pacman \
-      --noconfirm \
-      --refresh \
-      --sync \
-      --sysupgrade && \
-    pacman \
-      --noconfirm \
-      --sync \
+RUN pacman --noconfirm -Syu && \
+    pacman --noconfirm -S \
       binutils \
       curl \
       fakeroot \
       gcc \
-      jq \
       make \
       openssl \
       patch \
@@ -20,10 +13,7 @@ RUN pacman \
       bison \
       flex \
       sudo && \
-    pacman \
-      --sync \
-      --clean \
-      --noconfirm
+    pacman --noconfirm -Sc
 
 RUN useradd --create-home builduser && \
     echo 'builduser ALL=(ALL) NOPASSWD: ALL' \
@@ -32,4 +22,4 @@ RUN useradd --create-home builduser && \
 USER builduser
 WORKDIR /home/builduser
 
-COPY build-repo packages.txt /home/builduser/
+COPY build-package build-repo packages.txt /home/builduser/

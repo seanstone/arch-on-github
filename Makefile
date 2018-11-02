@@ -1,41 +1,31 @@
-
 REPOSITORY ?= github
 REPO_DB := build/repo/$(REPOSITORY).db.tar.xz
+DOCKER_IMAGE := seanstone/arch-repo-builder
+DOCKER_CONTAINER := arch-repo-builder
 
-all: repo
+.PHONY: image
+image:
+	docker build --pull --tag=$(DOCKER_IMAGE) .
 
+.PHONY: container
+container:
+	docker run -td \
+	--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
+	--name=$(DOCKER_CONTAINER) $(DOCKER_IMAGE)
+
+.PHONY: makepkg-%
+makepkg-%: build-package
+	docker exec --tty $(DOCKER_CONTAINER) ./build-package $*
+
+$(REPO_DB): build-repo packages.txt
+	docker exec --tty $(DOCKER_CONTAINER) ./build-repo $(REPOSITORY)
+
+.PHONY: repo
 repo: $(REPO_DB)
 	mkdir -p repo
 	cp build/packages/* repo
 	cp build/repo/* repo
 
-$(REPO_DB): build-repo packages.txt
-	docker run \
-		--name=arch-repo-builder \
-		--tty \
-			seanstone/arch-repo-builder \
-			./build-repo $(REPOSITORY)
-	docker cp arch-repo-builder:/home/builduser/build .
-	docker rm arch-repo-builder
-
-build-image:
-	docker build \
-		--pull \
-		--tag=seanstone/arch-repo-builder \
-		.
-.PHONY: build-image
-
-delete-latest:
-	docker run \
-		--env=GITHUB_TOKEN=$(GITHUB_TOKEN) \
-		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-		--name=arch-repo-builder \
-		--rm \
-		--tty \
-			seanstone/arch-repo-builder \
-			./delete-release latest
-	docker
-
+.PHONY: clean
 clean:
 	rm -rf build repo
-.PHONY: clean
