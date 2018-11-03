@@ -66,3 +66,4 @@ install_package() {
 }
 
 build_package "$@"
+install_package "$@"
