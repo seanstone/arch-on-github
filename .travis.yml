@@ -6,8 +6,8 @@ sudo: required
 
 jobs:
   include:
-    - stage: "Build Docker image"
-      script: make image
+    # - stage: "Build Docker image"
+    #   script: make image
     - stage: "Build packages"
       script: make PKG_LIST=packages.txt
       before_deploy:
