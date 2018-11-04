@@ -2,10 +2,9 @@
 
 build_repo() {
   local repository=$1
-  mkdir -p build/repo
   repo-add --new --remove \
-    "build/repo/${repository}.db.tar.xz" \
-    build/packages/*
+    "repo/${repository}.db.tar.xz" \
+    packages/*.pkg.tar.xz
 }
 
 build_repo "$@"

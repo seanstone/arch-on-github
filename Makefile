@@ -1,15 +1,15 @@
 REPOSITORY ?= github
-REPO_DB := build/repo/$(REPOSITORY).db.tar.xz
 DOCKER_USERNAME ?= seanstone
 DOCKER_IMAGE ?= arch-on-github
+PKG_LIST ?= packages.txt
 
 .PHONY: pkg-list
 pkg-list:
 	mkdir -p build
 	chmod 777 build
 	docker run --tty \
-	--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-	$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-package-list $(PKG_LIST)
+		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
+		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-package-list $(PKG_LIST)
 
 .PHONY: image
 image:
@@ -17,17 +17,18 @@ image:
 	docker build --pull --tag=$(DOCKER_USERNAME)/$(DOCKER_IMAGE):latest .
 	docker push $(DOCKER_USERNAME)/$(DOCKER_IMAGE):latest
 
-$(REPO_DB):
-	docker run --tty \
-	--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-	$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-repo $(REPOSITORY)
-
 .PHONY: repo
-repo: $(REPO_DB)
-	mkdir -p repo
-	cp build/packages/* repo
-	cp build/repo/* repo
+repo:
+	mkdir -p repo packages
+	cd packages && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/latest \
+		| grep "browser_download_url.*" \
+		| cut -d : -f 2,3 \
+		| tr -d \" \
+		| wget -qi -
+	docker run --tty \
+		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
+		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-repo $(REPOSITORY)
 
 .PHONY: clean
 clean:
-	rm -rf build repo
+	rm -rf build repo packages
