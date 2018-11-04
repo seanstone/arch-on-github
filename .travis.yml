@@ -11,7 +11,6 @@ addons:
 
 env:
   - PKG_LIST=packages.txt
-  - PKG_LIST=packages2.txt
 
 script: make
 
@@ -49,7 +48,7 @@ jobs:
         on:
           repo: seanstone/arch-on-github
       after_deploy:
-        - ./delete-release next  
+        - ./delete-release next
 
 # - stage: "Build Docker image"
 #   script: make image

@@ -6,6 +6,10 @@ export SRCDEST="$(pwd)/build/sources"
 build_package() {
   local package="$1"
 
+  if package_in_official_repo "$package"; then
+    sudo sh -c "pacman --noconfirm -S ${package}"
+  fi
+
   if [ -d "build/snapshots/${package}" ]; then
     echo "Already built package ${package}, skipping..."
     return
