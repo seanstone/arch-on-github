@@ -9,6 +9,13 @@ addons:
     packages:
     - jq
 
+jobs:
+  include:
+    - stage: "Prepare"
+      before_deploy:
+        # Delete the (previous) latest release, since Travis will not update the packages otherwise.
+        - ./delete-release latest
+
 env:
   - PKG_LIST=packages.txt
   - PKG_LIST=packages2.txt
@@ -19,10 +26,8 @@ before_deploy:
   - git config --local user.name "En Shih"
   - git config --local user.email "seanstone5923@gmail.com"
   - git tag -d $(git tag)
-  # Delete the (previous) latest release, since Travis will not update the packages otherwise.
-  #- ./delete-release latest
   - git tag latest
-  
+
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
@@ -40,8 +45,6 @@ jobs:
         - git config --local user.name "En Shih"
         - git config --local user.email "seanstone5923@gmail.com"
         - git tag -d $(git tag)
-        # Delete the (previous) latest release, since Travis will not update the packages otherwise.
-        - ./delete-release latest
         - git tag latest
       deploy:
         provider: releases
