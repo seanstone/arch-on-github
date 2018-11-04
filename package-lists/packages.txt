@@ -4,8 +4,8 @@ libiio-git
 libad9361-iio-git
 gnuradio-iio-git
 libbladerf-git
+soapysdr-git
 gnuradio-osmosdr-gqrx-git
 gqrx-git
-soapysdr-git
 nlohmann-json
 pothos-git
