@@ -4,28 +4,32 @@ services:
   - docker
 sudo: required
 
-before_install:
-  - sudo apt-get install -y jq
+env:
+  - DOCKER_IMAGE=seanstone/arch-repo-builder
 
-before_script:
-  - make image
-
-script:
-  - make repo
-
-before_deploy:
-  - git config --local user.name "En Shih"
-  - git config --local user.email "seanstone5923@gmail.com"
-  - git tag -d $(git tag)
-  # Delete the (previous) latest release, since Travis will not update the packages otherwise.
-  - ./delete-release latest
-  - git tag latest
-
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file: repo/*
-  file_glob: true
-  skip_cleanup: true
-  on:
-    repo: seanstone/arch-on-github
+jobs:
+  include:
+    - stage: "Build Docker image"
+      script:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - make image
+      - docker push $DOCKER_USERNAME/$DOCKER_IMAGE
+    - stage: "Build repo"
+      script: make repo
+    - stage: "Deploy"
+      before_deploy:
+        - sudo apt-get install -y jq
+        - git config --local user.name "En Shih"
+        - git config --local user.email "seanstone5923@gmail.com"
+        - git tag -d $(git tag)
+        # Delete the (previous) latest release, since Travis will not update the packages otherwise.
+        - ./delete-release latest
+        - git tag latest
+    - deploy:
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file: repo/*
+        file_glob: true
+        skip_cleanup: true
+        on:
+          repo: seanstone/arch-on-github
