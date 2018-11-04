@@ -8,7 +8,7 @@ build_package() {
 
   if package_in_official_repo "$package"; then
     sudo sh -c "pacman --noconfirm -S ${package}"
-    return 0
+    exit 0
   fi
 
   if [ -d "build/snapshots/${package}" ]; then
