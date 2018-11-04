@@ -1,11 +1,11 @@
 REPOSITORY ?= github
 REPO_DB := build/repo/$(REPOSITORY).db.tar.xz
-DOCKER_USERNAME ?= seanstone
-DOCKER_IMAGE ?= arch-repo-builder
 
 .PHONY: image
 image:
-	docker build --pull --tag=$(DOCKER_USERNAME)/$(DOCKER_IMAGE) .
+	@echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
+	docker build --pull --tag=$(DOCKER_USERNAME)/$(DOCKER_IMAGE):latest .
+	docker push $(DOCKER_USERNAME)/$(DOCKER_IMAGE):latest
 
 .PHONY: pkg-%
 pkg-%: build-package

@@ -4,16 +4,10 @@ services:
   - docker
 sudo: required
 
-env:
-  - DOCKER_IMAGE=seanstone/arch-repo-builder
-
 jobs:
   include:
     - stage: "Build Docker image"
-      script:
-      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - make image
-      - docker push $DOCKER_USERNAME/$DOCKER_IMAGE
+      script: make image
     - stage: "Build repo"
       script: make repo
     - stage: "Deploy"
