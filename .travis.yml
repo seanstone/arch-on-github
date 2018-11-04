@@ -11,6 +11,7 @@ addons:
 
 env:
   - PKG_LIST=package-lists/packages.txt
+  - PKG_LIST=package-lists/packages2.txt
 
 script: make
 
