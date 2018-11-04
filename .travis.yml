@@ -13,7 +13,7 @@ env:
   - PKG_LIST=packages.txt
   - PKG_LIST=packages2.txt
 
-before_install:
+before_script:
   - ./delete-release latest
 
 script: make
