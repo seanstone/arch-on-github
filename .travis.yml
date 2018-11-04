@@ -13,8 +13,8 @@ jobs:
   include:
     - stage: "Packages"
       env:
-          - PKG_LIST=packages.txt
-          - PKG_LIST=packages2.txt
+        - PKG_LIST=packages.txt
+        - PKG_LIST=packages2.txt
       script: make
       before_deploy:
         - git config --local user.name "En Shih"
