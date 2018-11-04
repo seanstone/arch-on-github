@@ -8,16 +8,4 @@ build_repo() {
     build/packages/*
 }
 
-main() {
-  while read -r dependency; do
-    sudo sh -c "pacman --noconfirm -S ${dependency}"
-  done < dependencies.txt
-
-  while read -r package; do
-    ./build-package "${package}"
-  done < packages.txt
-
-  build_repo "$1"
-}
-
-main "$@"
+build_repo "$@"

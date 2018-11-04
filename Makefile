@@ -1,26 +1,29 @@
 REPOSITORY ?= github
 REPO_DB := build/repo/$(REPOSITORY).db.tar.xz
 DOCKER_IMAGE := seanstone/arch-repo-builder
-DOCKER_CONTAINER := arch-repo-builder
 
 .PHONY: image
 image:
 	docker build --pull --tag=$(DOCKER_IMAGE) .
 
-.PHONY: container
-container:
+.PHONY: pkg-%
+pkg-%: build-package
 	mkdir -p build
 	chmod 777 build
-	docker run -td \
+	docker run --tty \
 	--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-	--name=$(DOCKER_CONTAINER) $(DOCKER_IMAGE)
+	$(DOCKER_IMAGE) ./build-package $*
 
-.PHONY: makepkg-%
-makepkg-%: build-package
-	docker exec --tty $(DOCKER_CONTAINER) ./build-package $*
+.PHONY: pkg
+pkg: packages.txt
+	while read -r package; do \
+      $(MAKE) pkg-$$package; \
+    done < packages.txt
 
-$(REPO_DB): build-repo packages.txt
-	docker exec --tty $(DOCKER_CONTAINER) ./build-repo $(REPOSITORY)
+$(REPO_DB): pkg
+	docker run --tty \
+	--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
+	$(DOCKER_IMAGE) ./build-repo $(REPOSITORY)
 
 .PHONY: repo
 repo: $(REPO_DB)
