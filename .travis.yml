@@ -1,3 +1,6 @@
+tags:
+  enabled: false
+
 language: generic
 
 services:
