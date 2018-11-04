@@ -19,8 +19,8 @@ image:
 
 .PHONY: repo
 repo:
-	mkdir -p repo packages
-	cd packages && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/latest \
+	mkdir -p repo
+	cd repo && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/latest \
 		| grep "browser_download_url.*" \
 		| cut -d : -f 2,3 \
 		| tr -d \" \
@@ -31,4 +31,4 @@ repo:
 
 .PHONY: clean
 clean:
-	rm -rf build repo packages
+	rm -rf build repo

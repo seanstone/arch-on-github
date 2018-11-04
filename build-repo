@@ -4,7 +4,7 @@ build_repo() {
   local repository=$1
   repo-add --new --remove \
     "repo/${repository}.db.tar.xz" \
-    packages/*.pkg.tar.xz
+    repo/*.pkg.tar.xz
 }
 
 build_repo "$@"
