@@ -4,6 +4,11 @@ services:
   - docker
 sudo: required
 
+addons:
+  apt:
+    packages:
+    - jq
+
 jobs:
   include:
     # - stage: "Build Docker image"
@@ -11,7 +16,6 @@ jobs:
     - stage: "Build packages"
       script: make PKG_LIST=packages.txt
       before_deploy:
-        - sudo apt-get install -y jq
         - git config --local user.name "En Shih"
         - git config --local user.email "seanstone5923@gmail.com"
         - git tag -d $(git tag)
