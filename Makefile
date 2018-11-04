@@ -21,7 +21,7 @@ image:
 repo:
 	mkdir -p repo
 	chmod 777 repo
-	cd repo && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/latest \
+	cd repo && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/tags/next \
 		| grep "browser_download_url.*" \
 		| cut -d : -f 2,3 \
 		| tr -d \" \

@@ -13,16 +13,13 @@ env:
   - PKG_LIST=packages.txt
   - PKG_LIST=packages2.txt
 
-before_script:
-  - ./delete-release latest
-
 script: make
 
 before_deploy:
   - git config --local user.name "En Shih"
   - git config --local user.email "seanstone5923@gmail.com"
   - git tag -d $(git tag)
-  - git tag latest
+  - git tag next
 
 deploy:
   provider: releases
@@ -51,6 +48,8 @@ jobs:
         skip_cleanup: true
         on:
           repo: seanstone/arch-on-github
+      after_deploy:
+        - ./delete-release next  
 
 # - stage: "Build Docker image"
 #   script: make image
