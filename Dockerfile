@@ -21,5 +21,3 @@ RUN useradd --create-home builduser && \
 
 USER builduser
 WORKDIR /home/builduser
-
-COPY build-package build-repo packages.txt /home/builduser/

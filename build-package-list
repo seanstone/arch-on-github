@@ -1,0 +1,5 @@
+#!/bin/sh -ex
+
+while read -r package; do
+  ./build-package "${package}"
+done < "$1"

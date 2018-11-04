@@ -8,7 +8,9 @@ jobs:
   include:
     - stage: "Build Docker image"
       script: make image
-    - stage: "Build repo"
+    - stage: "Build packages"
+      script: make PKG_LIST=packages.txt
+    - stage: "Build packages"
       script: make repo
     - stage: "Deploy"
       before_deploy:
