@@ -8,4 +8,5 @@ soapysdr-git
 gnuradio-osmosdr-gqrx-git
 gqrx-git
 nlohmann-json-bin
+qwt
 pothos-git
