@@ -9,26 +9,30 @@ addons:
     packages:
     - jq
 
-jobs:
-  include:
-    # - stage: "Build Docker image"
-    #   script: make image
-    - stage: "Build packages"
-      script: make PKG_LIST=packages.txt
-      before_deploy:
-        - git config --local user.name "En Shih"
-        - git config --local user.email "seanstone5923@gmail.com"
-        - git tag -d $(git tag)
-        # Delete the (previous) latest release, since Travis will not update the packages otherwise.
-        - ./delete-release latest
-        - git tag latest
-      deploy:
-        provider: releases
-        api_key: $GITHUB_TOKEN
-        file: build/packages/*
-        file_glob: true
-        skip_cleanup: true
-        on:
-          repo: seanstone/arch-on-github
-    - stage: "Build repo"
-      script: make repo
+env:
+    - PKG_LIST=packages.txt
+    - PKG_LIST=packages2.txt
+
+script: make
+
+before_deploy:
+  - git config --local user.name "En Shih"
+  - git config --local user.email "seanstone5923@gmail.com"
+  - git tag -d $(git tag)
+  # Delete the (previous) latest release, since Travis will not update the packages otherwise.
+  #- ./delete-release latest
+  - git tag latest
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: build/packages/*
+  file_glob: true
+  skip_cleanup: true
+  on:
+    repo: seanstone/arch-on-github
+
+# - stage: "Build Docker image"
+#   script: make image
+# - stage: "Build repo"
+#   script: make repo
