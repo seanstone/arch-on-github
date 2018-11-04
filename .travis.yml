@@ -10,9 +10,6 @@ jobs:
       script: make image
     - stage: "Build packages"
       script: make PKG_LIST=packages.txt
-    - stage: "Build packages"
-      script: make repo
-    - stage: "Deploy"
       before_deploy:
         - sudo apt-get install -y jq
         - git config --local user.name "En Shih"
@@ -21,11 +18,13 @@ jobs:
         # Delete the (previous) latest release, since Travis will not update the packages otherwise.
         - ./delete-release latest
         - git tag latest
-    - deploy:
+      deploy:
         provider: releases
         api_key: $GITHUB_TOKEN
-        file: repo/*
+        file: build/packages/*
         file_glob: true
         skip_cleanup: true
         on:
           repo: seanstone/arch-on-github
+    - stage: "Build repo"
+      script: make repo
