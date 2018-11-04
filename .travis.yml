@@ -10,7 +10,7 @@ addons:
     - jq
 
 env:
-  - PKG_LIST=packages.txt
+  - PKG_LIST=package-lists/packages.txt
 
 script: make
 
