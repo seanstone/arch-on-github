@@ -12,6 +12,8 @@ addons:
     packages:
     - jq
 
+script: make image
+
 env:
   - PKG_LIST=package-lists/packages.txt
   - PKG_LIST=package-lists/packages2.txt
@@ -53,6 +55,3 @@ jobs:
           repo: seanstone/arch-on-github
       after_deploy:
         - ./delete-release next
-
-# - stage: "Build Docker image"
-#   script: make image
