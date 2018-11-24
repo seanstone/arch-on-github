@@ -14,7 +14,10 @@ addons:
     packages:
     - jq
 
-before_script: make image
+jobs:
+  include:
+    - stage: "Image"
+      script: make image
 
 env:
   - PKG_LIST=package-lists/packages.txt
