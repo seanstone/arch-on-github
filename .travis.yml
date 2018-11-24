@@ -19,7 +19,7 @@ jobs:
 
     - stage: "Packages"
       script: make PKG_LIST=package-lists/packages.txt
-      script: make PKG_LIST=package-lists/packages2.txt
+    - script: make PKG_LIST=package-lists/packages2.txt
       before_deploy:
         - git config --local user.name "En Shih"
         - git config --local user.email "seanstone5923@gmail.com"
