@@ -1,5 +1,6 @@
-tags:
-  enabled: false
+branches:
+  only:
+  - master
 
 language: generic
 
