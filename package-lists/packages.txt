@@ -1,4 +1,6 @@
 gnuradio
+doxygen
+graphviz
 rtl-sdr-git
 libiio-git
 libad9361-iio-git
