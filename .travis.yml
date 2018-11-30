@@ -26,9 +26,10 @@ jobs:
         - PKG_LIST=package-lists/packages.txt
       script: make
       before_deploy:
-        - git config --local user.name "En Shih"
-        - git config --local user.email "seanstone5923@gmail.com"
-        - git tag -d $(git tag)
+        - &git-config >
+          git config --local user.name "En Shih";
+          git config --local user.email "seanstone5923@gmail.com";
+          git tag -d $(git tag);
         - git tag next
       deploy: &deploy
         provider: releases
@@ -46,9 +47,7 @@ jobs:
     - stage: "Repo"
       script: make repo
       before_deploy:
-        - git config --local user.name "En Shih"
-        - git config --local user.email "seanstone5923@gmail.com"
-        - git tag -d $(git tag)
+        - *git-config
         - ./delete-release latest
         - git tag latest
       deploy:
