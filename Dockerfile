@@ -1,11 +1,6 @@
-FROM base/archlinux:latest
+FROM base/devel:latest
 
-RUN pacman --noconfirm -Syu && \
-    pacman --noconfirm -S \
-      base-devel \
-      curl \
-      openssl && \
-    pacman --noconfirm -Sc
+RUN pacman --noconfirm -Syu
 
 RUN useradd --create-home builduser && \
     echo 'builduser ALL=(ALL) NOPASSWD: ALL' \
