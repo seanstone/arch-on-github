@@ -1,7 +1,7 @@
 branches:
   only:
-  - master
-  - dev
+    - master
+    - dev
 
 language: generic
 
@@ -16,32 +16,33 @@ addons:
 
 jobs:
   include:
+      
     - stage: "Image"
       script: make image
-
-env:
-  - PKG_LIST=package-lists/packages.txt
-  - PKG_LIST=package-lists/packages2.txt
-
-script: make
-
-before_deploy:
-  - git config --local user.name "En Shih"
-  - git config --local user.email "seanstone5923@gmail.com"
-  - git tag -d $(git tag)
-  - git tag next
-
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file: build/packages/*
-  file_glob: true
-  skip_cleanup: true
-  on:
-    repo: seanstone/arch-on-github
-
-jobs:
-  include:
+      
+    - &packages
+      stage: "Packages"
+      env:
+        - PKG_LIST=package-lists/packages.txt
+      script: make
+      before_deploy:
+        - git config --local user.name "En Shih"
+        - git config --local user.email "seanstone5923@gmail.com"
+        - git tag -d $(git tag)
+        - git tag next
+      deploy: &deploy
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file: build/packages/*
+        file_glob: true
+        skip_cleanup: true
+        on:
+          repo: seanstone/arch-on-github
+          
+    - <<: *packages
+      env:
+        - PKG_LIST=package-lists/packages2.txt
+      
     - stage: "Repo"
       script: make repo
       before_deploy:
@@ -51,12 +52,7 @@ jobs:
         - ./delete-release latest
         - git tag latest
       deploy:
-        provider: releases
-        api_key: $GITHUB_TOKEN
+        <<: *deploy
         file: repo/*
-        file_glob: true
-        skip_cleanup: true
-        on:
-          repo: seanstone/arch-on-github
       after_deploy:
         - ./delete-release next
