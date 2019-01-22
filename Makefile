@@ -3,19 +3,21 @@ DOCKER_USERNAME ?= seanstone
 DOCKER_IMAGE ?= arch-on-github
 PKG_LIST ?= package-lists/packages.txt
 
-.PHONY: pkg-list
-pkg-list:
-	mkdir -p build
-	chmod 777 build
-	docker run --tty \
-		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) scripts/build-package-list $(PKG_LIST)
+docker_run = docker run --tty \
+	--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
+	$(DOCKER_USERNAME)/$(DOCKER_IMAGE)
 
 ifndef DOCKER_PASSWORD
 docker_login = docker login -u "$(DOCKER_USERNAME)"
 else
 docker_login = @echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
 endif
+
+.PHONY: pkg-list
+pkg-list:
+	mkdir -p build
+	chmod 777 build
+	$(docker_run) scripts/build-package-list $(PKG_LIST)
 
 .PHONY: image
 image:
@@ -25,9 +27,7 @@ image:
 
 .PHONY: repo
 repo:
-	docker run --tty \
-		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) scripts/build-repo $(REPOSITORY)
+	$(docker_run) scripts/build-repo $(REPOSITORY)
 
 .PHONY: clean
 clean:
