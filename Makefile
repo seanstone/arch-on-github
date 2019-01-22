@@ -25,13 +25,6 @@ image:
 
 .PHONY: repo
 repo:
-	mkdir -p repo
-	chmod 777 repo
-	cd repo && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/tags/next \
-		| grep "browser_download_url.*" \
-		| cut -d : -f 2,3 \
-		| tr -d \" \
-		| wget -qi -
 	docker run --tty \
 		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
 		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-repo $(REPOSITORY)

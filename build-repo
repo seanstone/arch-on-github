@@ -1,10 +1,9 @@
 #!/bin/sh -ex
 
-build_repo() {
-  local repository=$1
-  repo-add --new --remove \
-    "repo/${repository}.db.tar.xz" \
-    repo/*.pkg.tar.xz
-}
-
-build_repo "$@"
+mkdir -p repo
+(cd repo && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/tags/next \
+    | grep "browser_download_url.*" \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -qi -)
+repo-add --new --remove "repo/$1.db.tar.xz" repo/*.pkg.tar.xz
