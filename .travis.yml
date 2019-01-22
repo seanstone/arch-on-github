@@ -48,10 +48,10 @@ jobs:
       script: make repo
       before_deploy:
         - *git-config
-        - ./delete-release latest
+        - scripts/delete-release latest
         - git tag latest
       deploy:
         <<: *deploy
         file: repo/*
       after_deploy:
-        - ./delete-release next
+        - scripts/delete-release next

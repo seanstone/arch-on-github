@@ -9,7 +9,7 @@ pkg-list:
 	chmod 777 build
 	docker run --tty \
 		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-package-list $(PKG_LIST)
+		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) scripts/build-package-list $(PKG_LIST)
 
 ifndef DOCKER_PASSWORD
 docker_login = docker login -u "$(DOCKER_USERNAME)"
@@ -27,7 +27,7 @@ image:
 repo:
 	docker run --tty \
 		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
-		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-repo $(REPOSITORY)
+		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) scripts/build-repo $(REPOSITORY)
 
 .PHONY: clean
 clean:
