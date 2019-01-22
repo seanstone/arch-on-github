@@ -1,7 +1,7 @@
 REPOSITORY ?= github
 DOCKER_USERNAME ?= seanstone
 DOCKER_IMAGE ?= arch-on-github
-PKG_LIST ?= packages.txt
+PKG_LIST ?= package-lists/packages.txt
 
 .PHONY: pkg-list
 pkg-list:
