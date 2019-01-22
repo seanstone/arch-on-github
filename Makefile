@@ -11,9 +11,15 @@ pkg-list:
 		--mount=type=bind,source=$(shell pwd),destination=/home/builduser \
 		$(DOCKER_USERNAME)/$(DOCKER_IMAGE) ./build-package-list $(PKG_LIST)
 
+ifndef DOCKER_PASSWORD
+docker_login = docker login -u "$(DOCKER_USERNAME)"
+else
+docker_login = @echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
+endif
+
 .PHONY: image
 image:
-	@echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
+	$(docker_login)
 	docker build --pull --tag=$(DOCKER_USERNAME)/$(DOCKER_IMAGE):latest .
 	docker push $(DOCKER_USERNAME)/$(DOCKER_IMAGE):latest
 
