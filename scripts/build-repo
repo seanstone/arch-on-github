@@ -1,7 +1,7 @@
 #!/bin/sh -ex
 
 mkdir -p repo
-(cd repo && curl -s https://api.github.com/repos/seanstone/arch-on-github/releases/tags/next \
+(cd repo && curl -s https://api.github.com/repos/${USERNAME}/${REPO}/releases/tags/next \
     | grep "browser_download_url.*" \
     | cut -d : -f 2,3 \
     | tr -d \" \
