@@ -28,6 +28,7 @@ image:
 
 .PHONY: repo
 repo:
+	mkdir -p repo
 	$(docker_run) scripts/build-repo $(USERNAME)
 
 .PHONY: clean
