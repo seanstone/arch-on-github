@@ -1,1 +1,12 @@
 gnuradio
+rtl-sdr-git
+libiio-git
+libad9361-iio-git
+gnuradio-iio-git
+libbladerf-git
+soapysdr-git
+gnuradio-osmosdr-gqrx-git
+gqrx-git
+nlohmann-json-bin
+qwt
+pothos-git
