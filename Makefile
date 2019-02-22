@@ -23,7 +23,7 @@ pkg-list:
 .PHONY: image
 image:
 	$(docker_login)
-	docker build --pull --tag=$(USERNAME)/$(REPO):latest .
+	docker build --pull --tag=$(USERNAME)/$(REPO):latest --cache-from $(USERNAME)/$(REPO):latest .
 	docker push $(USERNAME)/$(REPO):latest
 
 .PHONY: repo
