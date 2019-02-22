@@ -26,12 +26,13 @@ image:
 	docker build --pull --tag=$(USERNAME)/$(REPO):latest --cache-from $(USERNAME)/$(REPO):latest .
 	docker push $(USERNAME)/$(REPO):latest
 
+%:
+	$(docker_run) scripts/build-package $@
+
 .PHONY: repo
 repo:
-	mkdir -p repo
-	chmod 777 repo
 	$(docker_run) scripts/build-repo $(USERNAME)
 
 .PHONY: clean
 clean:
-	rm -rf build repo
+	rm -rf build

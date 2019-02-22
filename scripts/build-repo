@@ -1,8 +1,4 @@
 #!/bin/sh -ex
 
-(cd repo && curl -s https://api.github.com/repos/${USERNAME}/${REPO}/releases/tags/next \
-    | grep "browser_download_url.*" \
-    | cut -d : -f 2,3 \
-    | tr -d \" \
-    | wget -qi -)
-repo-add --new --remove "repo/$1.db.tar.xz" repo/*.pkg.tar.xz
+mkdir -p build/repo
+repo-add --new --remove "build/repo/$1.db.tar.xz" build/packages/*.pkg.tar.xz
