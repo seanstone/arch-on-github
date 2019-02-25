@@ -48,6 +48,6 @@ asset:
 		curl \
 			-u $(USERNAME) \
 			-H "Content-Type: $$(file --mime-type -b $$f)" \
-			--data-binary $$f \
+			--data-binary "@$$f" \
 			"https://uploads.github.com/repos/$(USERNAME)/$(REPO)/releases/$$RELEASE_TAG/assets?name=$$f";\
 	done
