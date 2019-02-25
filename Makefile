@@ -36,3 +36,18 @@ repo:
 .PHONY: clean
 clean:
 	rm -rf build
+
+release:
+	curl -u $(USERNAME) -d '{"tag_name": "latest"}' 'https://api.github.com/repos/$(USERNAME)/$(REPO)/releases'
+
+asset:
+	RELEASE_TAG=$$(curl -X GET https://api.github.com/repos/$(USERNAME)/$(REPO)/releases/tags/latest | jq -r '.id');\
+	cd build/packages;\
+	for f in *.pkg.tar.xz; do\
+		echo $$f;\
+		curl \
+			-u $(USERNAME) \
+			-H "Content-Type: $$(file --mime-type -b $$f)" \
+			--data-binary $$f \
+			"https://uploads.github.com/repos/$(USERNAME)/$(REPO)/releases/$$RELEASE_TAG/assets?name=$$f";\
+	done
