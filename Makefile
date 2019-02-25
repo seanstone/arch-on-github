@@ -42,12 +42,10 @@ release:
 
 asset:
 	RELEASE_TAG=$$(curl -X GET https://api.github.com/repos/$(USERNAME)/$(REPO)/releases/tags/latest | jq -r '.id');\
-	cd build/packages;\
-	for f in *.pkg.tar.xz; do\
-		echo $$f;\
+	for f in build/packages/*.pkg.tar.xz; do\
 		curl \
 			-u $(USERNAME) \
 			-H "Content-Type: $$(file --mime-type -b $$f)" \
 			--data-binary "@$$f" \
-			"https://uploads.github.com/repos/$(USERNAME)/$(REPO)/releases/$$RELEASE_TAG/assets?name=$$f";\
+			"https://uploads.github.com/repos/$(USERNAME)/$(REPO)/releases/$$RELEASE_TAG/assets?name=$$(basename $$f)";\
 	done
