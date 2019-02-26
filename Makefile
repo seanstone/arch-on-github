@@ -37,15 +37,27 @@ repo:
 clean:
 	rm -rf build
 
-release:
-	curl -u $(USERNAME) -d '{"tag_name": "latest"}' 'https://api.github.com/repos/$(USERNAME)/$(REPO)/releases'
+create-release:
+	@CREATE_RELEASE=$$(curl -s -o /dev/null -w "%{http_code}" -u $(USERNAME) -d '{"tag_name": "latest"}' 'https://api.github.com/repos/$(USERNAME)/$(REPO)/releases');\
+	case $$CREATE_RELEASE in\
+		"422")\
+			echo "Release already created"\
+			;;\
+		"201")\
+			echo "Release created successfully"\
+			;;\
+	esac
 
-asset:
+define upload
 	RELEASE_TAG=$$(curl -X GET https://api.github.com/repos/$(USERNAME)/$(REPO)/releases/tags/latest | jq -r '.id');\
-	for f in build/packages/*.pkg.tar.xz; do\
+	for f in $(1); do\
 		curl \
 			-u $(USERNAME) \
 			-H "Content-Type: $$(file --mime-type -b $$f)" \
 			--data-binary "@$$f" \
 			"https://uploads.github.com/repos/$(USERNAME)/$(REPO)/releases/$$RELEASE_TAG/assets?name=$$(basename $$f)";\
 	done
+endef
+
+asset:
+	$(call upload,build/packages/*.pkg.tar.xz)
