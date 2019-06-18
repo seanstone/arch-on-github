@@ -8,7 +8,7 @@ docker_run = docker run --rm --tty \
 	arch-on-github
 
 .PHONY: pkg-list
-pkg-list:
+pkg-list: image
 	mkdir -p build
 	chmod 777 build
 	$(docker_run) scripts/build-package-list $(PKG_LIST)
