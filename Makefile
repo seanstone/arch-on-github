@@ -38,17 +38,3 @@ create-release:
 			echo "Release created successfully"\
 			;;\
 	esac
-
-define upload
-	RELEASE_TAG=$$(curl -X GET https://api.github.com/repos/$(USERNAME)/$(REPO)/releases/tags/latest | jq -r '.id');\
-	for f in $(1); do\
-		curl \
-			-u $(USERNAME) \
-			-H "Content-Type: $$(file --mime-type -b $$f)" \
-			--data-binary "@$$f" \
-			"https://uploads.github.com/repos/$(USERNAME)/$(REPO)/releases/$$RELEASE_TAG/assets?name=$$(basename $$f)";\
-	done
-endef
-
-asset:
-	$(call upload,build/packages/*.pkg.tar.xz)
