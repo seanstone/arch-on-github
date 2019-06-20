@@ -85,12 +85,14 @@ publish_package() {
             -X DELETE https://api.github.com/repos/$USERNAME/$REPO/releases/assets/$ASSET_ID
     fi
 
-    f=(build/packages/$1-*.pkg.tar.xz)
-	curl \
-        -H "Authorization: token $GITHUB_TOKEN" \
-		-H "Content-Type: $(file --mime-type -b $f)" \
-		--data-binary "@$f" \
-		"https://uploads.github.com/repos/$USERNAME/$REPO/releases/$RELEASE_ID/assets?name=$(basename $f)"
+    files=("build/repo/$USERNAME.db.tar.xz" build/packages/$1-*.pkg.tar.xz)
+    for f in "${files[@]}"; do
+        curl \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: $(file --mime-type -b $f)" \
+            --data-binary "@$f" \
+            "https://uploads.github.com/repos/$USERNAME/$REPO/releases/$RELEASE_ID/assets?name=$(basename $f)"
+    done
 }
 
 USERNAME=seanstone
