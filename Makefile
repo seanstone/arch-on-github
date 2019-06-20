@@ -31,3 +31,9 @@ image:
 	docker build --pull --tag=$(USERNAME)/$(REPO):latest --build-arg USERNAME=$(USERNAME) --build-arg REPO=$(REPO) - < Dockerfile
 	$(docker_login)
 	docker push $(USERNAME)/$(REPO):latest
+
+.PHONY: image-update
+image-update:
+	docker build --pull --tag=$(USERNAME)/$(REPO):latest - < update.Dockerfile
+	$(docker_login)
+	docker push $(USERNAME)/$(REPO):latest
