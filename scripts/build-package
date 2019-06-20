@@ -81,12 +81,13 @@ publish_package() {
     ASSET_ID=$(echo $release | jq ".assets[] | select(.name|test(\"$1-.*.pkg.tar.xz\")).id")
 
     if [[ ! -z "$ASSET_ID" ]]; then
-        curl -u $USERNAME -X DELETE https://api.github.com/repos/$USERNAME/$REPO/releases/assets/$ASSET_ID
+        curl -H "Authorization: token $GITHUB_TOKEN" \
+            -X DELETE https://api.github.com/repos/$USERNAME/$REPO/releases/assets/$ASSET_ID
     fi
 
     f=(build/packages/$1-*.pkg.tar.xz)
 	curl \
-		-u $USERNAME \
+        -H "Authorization: token $GITHUB_TOKEN" \
 		-H "Content-Type: $(file --mime-type -b $f)" \
 		--data-binary "@$f" \
 		"https://uploads.github.com/repos/$USERNAME/$REPO/releases/$RELEASE_ID/assets?name=$(basename $f)"
@@ -94,6 +95,11 @@ publish_package() {
 
 USERNAME=seanstone
 REPO=arch-on-github
+
+if [[ -z "$GITHUB_TOKEN" ]]; then
+    echo "Error: GITHUB_TOKEN not provided" >&2
+    exit 1
+fi
 
 if [[ -z "$USERNAME" ]]; then
     echo "Error: USERNAME not specified" >&2
