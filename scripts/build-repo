@@ -1,4 +1,0 @@
-#!/bin/sh -ex
-
-mkdir -p build/repo
-repo-add --new --remove "build/repo/$1.db.tar.xz" build/packages/*.pkg.tar.xz

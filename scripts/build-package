@@ -1,74 +1,115 @@
-#!/bin/sh -ex
+#!/bin/sh
+set -e
 
 export PKGDEST="$(pwd)/build/packages"
 export SRCDEST="$(pwd)/build/sources"
 
-build_package() {
-  local package="$1"
+error() {
+    echo -e "\033[1;31mERROR:\033[0m \033[1m${1}\033[0m"
+}
 
-  if package_in_official_repo "$package"; then
-    sudo sh -c "pacman --noconfirm -S ${package}"
-    exit 0
-  fi
+build_package()
+{
+    local package="$1"
 
-  if [ -d "build/snapshots/${package}" ]; then
-    echo "Already built package ${package}, skipping..."
-    return
-  fi
+    fetch_sources "${package}"
 
-  mkdir -p "build/snapshots"
-  curl "https://aur.archlinux.org/cgit/aur.git/snapshot/${package}.tar.gz" \
-    | tar --extract --gzip --verbose --directory='build/snapshots'
+    for pgp_key in $(get_pgp_keys "${package}"); do
+        gpg --recv-keys "${pgp_key}"
+    done
 
-  for pgp_key in $(get_pgp_keys "${package}"); do
-    gpg --recv-keys "${pgp_key}"
-  done
+    for dependency in $(get_dependencies "${package}"); do
+        if ! pacman -Qi "$dependency" > /dev/null; then
+            build_package "${dependency}"
+            install_package "${dependency}"
+            add_package_to_repo "${dependency}"
+            publish_package "${dependency}"
+        fi
+    done
 
-  for dependency in $(get_dependencies "${package}"); do
-    if ! pacman -Qi "$dependency" > /dev/null; then
-      if package_in_official_repo "$dependency"; then
-        sudo sh -c "pacman --noconfirm -S ${dependency}"
-      else
-        build_package "${dependency}"
-        install_package "${dependency}"
-      fi
+    mkdir -p "${PKGDEST}" "${SRCDEST}"
+    (cd "build/snapshots/${package}" && makepkg --clean --force --noconfirm --syncdeps)
+}
+
+remote_exists() {
+    return $(curl -s -o /dev/null -I --fail "$1")
+}
+
+fetch_sources() {
+    local url="https://aur.archlinux.org/cgit/aur.git/snapshot/$1.tar.gz"
+    mkdir -p "build/snapshots"
+    if ! remote_exists "${url}"; then
+        error "package $1 not found in AUR"
+        return 1
     fi
-  done
-
-  mkdir -p \
-    "${PKGDEST}" \
-    "${SRCDEST}"
-  (cd "build/snapshots/${package}" &&
-    makepkg \
-      --clean \
-      --force \
-      --noconfirm \
-      --syncdeps)
+    curl "${url}" \
+        | tar --extract --gzip --verbose --directory='build/snapshots'
 }
 
 # TODO: Remove versions (e.g. X>=Y)
 get_dependencies() {
-  local package="$1"
-  (cd "build/snapshots/${package}" &&
-    bash -c 'source PKGBUILD && echo ${depends[@]} ${makedepends[@]}') \
-    | sed --regexp-extended 's/>[^ ]+//g'
+    (cd "build/snapshots/$1" &&
+        bash -c 'source PKGBUILD && echo ${depends[@]} ${makedepends[@]}') \
+            | sed --regexp-extended 's/>[^ ]+//g'
 }
 
 package_in_official_repo() {
-  local package="$1"
-  pacman --sync --search "^${package}$" > /dev/null
+    pacman -Ss "^$1$" > /dev/null
 }
 
 get_pgp_keys() {
-  local package="$1"
-  (cd "build/snapshots/${package}" &&
-    bash -c 'source PKGBUILD && echo ${validpgpkeys[@]}')
+    (cd "build/snapshots/$1" &&
+        bash -c 'source PKGBUILD && echo ${validpgpkeys[@]}')
 }
 
 install_package() {
-  local package="$1"
-  sudo sh -c "pacman --noconfirm -U build/packages/${package}-*.pkg.tar.xz"
+    if package_in_official_repo $1; then
+        pacman --noconfirm -S $1
+    else
+        pacman --noconfirm -U build/packages/$1-*.pkg.tar.xz
+    fi
 }
 
+add_package_to_repo() {
+    mkdir -p build/repo
+    repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
+}
+
+publish_package() {
+    release=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
+    RELEASE_ID=$(echo $release | jq -r '.id')
+    ASSET_ID=$(echo $release | jq ".assets[] | select(.name|test(\"$1-.*.pkg.tar.xz\")).id")
+
+    if [[ ! -z "$ASSET_ID" ]]; then
+        curl -u $USERNAME -X DELETE https://api.github.com/repos/$USERNAME/$REPO/releases/assets/$ASSET_ID
+    fi
+
+    f=(build/packages/$1-*.pkg.tar.xz)
+	curl \
+		-u $USERNAME \
+		-H "Content-Type: $(file --mime-type -b $f)" \
+		--data-binary "@$f" \
+		"https://uploads.github.com/repos/$USERNAME/$REPO/releases/$RELEASE_ID/assets?name=$(basename $f)"
+}
+
+USERNAME=seanstone
+REPO=arch-on-github
+
+if [[ -z "$USERNAME" ]]; then
+    echo "Error: USERNAME not specified" >&2
+    exit 1
+fi
+
+if [[ -z "$REPO" ]]; then
+    echo "Error: REPO not specified" >&2
+    exit 1
+fi
+
+if [ "$#" -ne 1 ]; then
+    echo "Error: Package not specified" >&2
+    exit 1
+fi
+
 build_package "$@"
-install_package "$@"
+add_package_to_repo "$@"
+publish_package "$@"
