@@ -3,27 +3,15 @@ REPO ?= arch-on-github
 PKG_LIST ?= package-lists/packages.txt
 
 docker_run = docker run --rm --tty \
-	--mount=type=bind,source=$(shell pwd),destination=/root/ \
-	-w /root/ \
+	--mount=type=bind,source=$(shell pwd),destination=/builduser/ \
 	-e USERNAME=$(USERNAME) -e REPO=$(REPO) -e GITHUB_TOKEN=$(GITHUB_TOKEN) \
-	archlinux/base:latest
+	$(USERNAME)/$(REPO):latest
 
 .PHONY: pkg-list
 pkg-list:
 	mkdir -p build
 	chmod 777 build
 	$(docker_run) scripts/build-package rtl-sdr-git
-
-.PHONY: image
-image:
-	docker build -t arch-on-github - < Dockerfile
-
-%:
-	$(docker_run) scripts/build-package $@
-
-.PHONY: repo
-repo:
-	$(docker_run) scripts/build-repo $(USERNAME)
 
 .PHONY: clean
 clean:
@@ -39,3 +27,17 @@ create-release:
 			echo "Release created successfully"\
 			;;\
 	esac
+
+################################## Docker Image ###################################
+
+ifndef DOCKER_PASSWORD
+docker_login = docker login -u "$(USERNAME)"
+else
+docker_login = @echo "$(DOCKER_PASSWORD)" | docker login -u "$(USERNAME)" --password-stdin
+endif
+
+.PHONY: image
+image:
+	$(docker_login)
+	docker build --pull --tag=$(USERNAME)/$(REPO):latest - < Dockerfile
+	docker push $(USERNAME)/$(REPO):latest
