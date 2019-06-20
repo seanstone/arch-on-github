@@ -76,12 +76,7 @@ install_package() {
 
 add_package_to_repo() {
     mkdir -p build/repo
-    repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
-}
-
-download_db() {
-    mkdir -p build/repo
-    (cd build/repo && curl -O --fail https://github.com/$USERNAME/$REPO/releases/download/latest/$USERNAME.db.tar.xz)
+    repo-add --new --remove /var/lib/pacman/sync/$USERNAME.db build/packages/$1-*.pkg.tar.xz
 }
 
 delete_asset() {
@@ -99,11 +94,8 @@ publish_package() {
     
     delete_asset "$1-.*.pkg.tar.xz"
     delete_asset "$USERNAME.db"
-    delete_asset "$USERNAME.db.tar.xz"
 
-    cp build/repo/$USERNAME.db.tar.xz build/repo/$USERNAME.db
-
-    files=(build/packages/$1-*.pkg.tar.xz "build/repo/$USERNAME.db" "build/repo/$USERNAME.db.tar.xz")
+    files=(build/packages/$1-*.pkg.tar.xz /var/lib/pacman/sync/$USERNAME.db)
     for f in "${files[@]}"; do
         curl -s \
             -H "Authorization: token $GITHUB_TOKEN" \
@@ -136,7 +128,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-sudo pacman --noconfirm -Syu
+sudo pacman --noconfirm -Syu || true
 download_db
 build_package "$@"
 add_package_to_repo "$@"
