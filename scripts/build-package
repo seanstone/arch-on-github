@@ -75,17 +75,28 @@ add_package_to_repo() {
     repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
 }
 
-publish_package() {
-    release=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
-    RELEASE_ID=$(echo $release | jq -r '.id')
-    ASSET_ID=$(echo $release | jq ".assets[] | select(.name|test(\"$1-.*.pkg.tar.xz\")).id")
+download_db() {
+    mkdir -p build/repo
+    (cd build/repo && curl -O --fail https://github.com/$USERNAME/$REPO/releases/download/latest/$USERNAME.db.tar.xz)
+}
 
+delete_asset() {
+    local release=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
+    local ASSET_ID=$(echo $release | jq ".assets[] | select(.name|test(\"$1\")).id")
     if [[ ! -z "$ASSET_ID" ]]; then
         curl -H "Authorization: token $GITHUB_TOKEN" \
             -X DELETE https://api.github.com/repos/$USERNAME/$REPO/releases/assets/$ASSET_ID
     fi
+}
 
-    files=("build/repo/$USERNAME.db.tar.xz" build/packages/$1-*.pkg.tar.xz)
+publish_package() {
+    local release=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
+    local RELEASE_ID=$(echo $release | jq -r '.id')
+    
+    delete_asset "$1-.*.pkg.tar.xz"
+    delete_asset "$USERNAME.db.tar.xz"
+
+    files=(build/packages/$1-*.pkg.tar.xz "build/repo/$USERNAME.db.tar.xz")
     for f in "${files[@]}"; do
         curl \
             -H "Authorization: token $GITHUB_TOKEN" \
@@ -118,6 +129,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
+download_db
 build_package "$@"
 add_package_to_repo "$@"
 publish_package "$@"
