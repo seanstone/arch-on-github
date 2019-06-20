@@ -1,17 +1,16 @@
 USERNAME ?= seanstone
 REPO ?= arch-on-github
-PKG_LIST ?= package-lists/packages.txt
 
 docker_run = docker run --rm --tty \
-	--mount=type=bind,source=$(shell pwd),destination=/builduser/ \
+	--mount=type=bind,source=$(shell pwd),destination=/home/builduser/ \
 	-e USERNAME=$(USERNAME) -e REPO=$(REPO) -e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 	$(USERNAME)/$(REPO):latest
 
-.PHONY: pkg-list
-pkg-list:
+.PHONY: pkg
+pkg:
 	mkdir -p build
 	chmod 777 build
-	$(docker_run) scripts/build-package rtl-sdr-git
+	$(docker_run) ./build-package rtl-sdr-git
 
 .PHONY: clean
 clean:

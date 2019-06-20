@@ -22,10 +22,12 @@ build_package()
         if ! pacman -Qi "$dependency" > /dev/null; then
             if ! package_in_official_repo $dependency; then
                 build_package $dependency
+                install_package $dependency
+                add_package_to_repo $dependency
+                publish_package $dependency
+            else
+                install_package $dependency
             fi
-            install_package $dependency
-            add_package_to_repo $dependency
-            publish_package $dependency
         fi
     done
 
@@ -66,9 +68,9 @@ get_pgp_keys() {
 
 install_package() {
     if package_in_official_repo $1; then
-        pacman --noconfirm -S $1
+        sudo pacman --noconfirm -S $1
     else
-        pacman --noconfirm -U build/packages/$1-*.pkg.tar.xz
+        sudo pacman --noconfirm -U build/packages/$1-*.pkg.tar.xz
     fi
 }
 
@@ -131,8 +133,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-pacman --noconfirm -Syu
-pacman --noconfirm -S base-devel
+sudo pacman --noconfirm -Syu
 download_db
 build_package "$@"
 add_package_to_repo "$@"
