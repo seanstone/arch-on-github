@@ -8,19 +8,7 @@ services:
   - docker
 sudo: required
 
-addons:
-  apt:
-    packages:
-    - jq
+env:
+  - PKG=rtl-sdr-git
 
-jobs:
-  include:
-      
-    - stage: "Image"
-      script: make image
-      
-    - &packages
-      stage: "Packages"
-      env:
-        - PKG_LIST=package-lists/packages.txt
-      script: make
+script: make

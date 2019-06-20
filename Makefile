@@ -10,7 +10,7 @@ docker_run = docker run --rm --tty \
 pkg:
 	mkdir -p build
 	chmod 777 build
-	$(docker_run) ./build-package rtl-sdr-git
+	$(docker_run) ./build-package $(PKG)
 
 .PHONY: clean
 clean:
