@@ -3,15 +3,16 @@ REPO ?= arch-on-github
 PKG_LIST ?= package-lists/packages.txt
 
 docker_run = docker run --rm --tty \
-	--mount=type=bind,source=$(shell pwd),destination=/home/builduser/ \
-	-e USERNAME=$(USERNAME) -e REPO=$(REPO) \
-	arch-on-github
+	--mount=type=bind,source=$(shell pwd),destination=/root/ \
+	-w /root/ \
+	-e USERNAME=$(USERNAME) -e REPO=$(REPO) -e GITHUB_TOKEN=$(GITHUB_TOKEN) \
+	archlinux/base:latest
 
 .PHONY: pkg-list
-pkg-list: image
+pkg-list:
 	mkdir -p build
 	chmod 777 build
-	$(docker_run) scripts/build-package-list $(PKG_LIST)
+	$(docker_run) scripts/build-package rtl-sdr-git
 
 .PHONY: image
 image:

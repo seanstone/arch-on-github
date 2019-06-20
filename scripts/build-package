@@ -20,10 +20,12 @@ build_package()
 
     for dependency in $(get_dependencies "${package}"); do
         if ! pacman -Qi "$dependency" > /dev/null; then
-            build_package "${dependency}"
-            install_package "${dependency}"
-            add_package_to_repo "${dependency}"
-            publish_package "${dependency}"
+            if ! package_in_official_repo $dependency; then
+                build_package $dependency
+            fi
+            install_package $dependency
+            add_package_to_repo $dependency
+            publish_package $dependency
         fi
     done
 
@@ -129,6 +131,8 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
+pacman --noconfirm -Syu
+pacman --noconfirm -S base-devel
 download_db
 build_package "$@"
 add_package_to_repo "$@"
