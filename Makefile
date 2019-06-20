@@ -16,17 +16,6 @@ pkg:
 clean:
 	rm -rf build
 
-create-release:
-	@CREATE_RELEASE=$$(curl -s -o /dev/null -w "%{http_code}" -u $(USERNAME) -d '{"tag_name": "latest"}' 'https://api.github.com/repos/$(USERNAME)/$(REPO)/releases');\
-	case $$CREATE_RELEASE in\
-		"422")\
-			echo "Release already created"\
-			;;\
-		"201")\
-			echo "Release created successfully"\
-			;;\
-	esac
-
 ################################## Docker Image ###################################
 
 ifndef DOCKER_PASSWORD
