@@ -76,7 +76,9 @@ install_package() {
 
 add_package_to_repo() {
     mkdir -p build/repo
-    repo-add --new --remove /var/lib/pacman/sync/$USERNAME.db build/packages/$1-*.pkg.tar.xz
+    cp /var/lib/pacman/sync/$USERNAME.db build/repo/$USERNAME.db.tar.xz
+    repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
+    cp build/repo/$USERNAME.db.tar.xz /var/lib/pacman/sync/$USERNAME.db
 }
 
 delete_asset() {
