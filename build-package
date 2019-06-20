@@ -128,8 +128,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-sudo pacman --noconfirm -Syu || true
-download_db
+#sudo pacman --noconfirm -Syu || true
 build_package "$@"
 add_package_to_repo "$@"
 publish_package "$@"
