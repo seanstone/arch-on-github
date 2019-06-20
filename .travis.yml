@@ -9,6 +9,7 @@ services:
 sudo: required
 
 env:
-  - PKG=rtl-sdr-git
+  - PKG="rtl-sdr-git libiio-git libad9361-iio-git gnuradio-iio-git libbladerf-git soapysdr-git gnuradio-osmosdr-gqrx-git gqrx-git"
+  - PKG="nlohmann-json-bin qwt pothos-git"
 
 script: make

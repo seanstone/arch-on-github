@@ -10,7 +10,9 @@ docker_run = docker run --rm --tty \
 pkg:
 	mkdir -p build
 	chmod 777 build
-	$(docker_run) ./build-package $(PKG)
+	for pkg in $(PKG); do \
+		$(docker_run) ./build-package $$pkg; \
+	done
 
 .PHONY: clean
 clean:
