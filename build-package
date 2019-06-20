@@ -102,7 +102,7 @@ publish_package() {
 
     files=(build/packages/$1-*.pkg.tar.xz "build/repo/$USERNAME.db.tar.xz")
     for f in "${files[@]}"; do
-        curl \
+        curl -s \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: $(file --mime-type -b $f)" \
             --data-binary "@$f" \
