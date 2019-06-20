@@ -99,8 +99,9 @@ publish_package() {
     
     delete_asset "$1-.*.pkg.tar.xz"
     delete_asset "$USERNAME.db.tar.xz"
+    delete_asset "$USERNAME.db"
 
-    files=(build/packages/$1-*.pkg.tar.xz "build/repo/$USERNAME.db.tar.xz")
+    files=(build/packages/$1-*.pkg.tar.xz "build/repo/$USERNAME.db.tar.xz" "build/repo/$USERNAME.db")
     for f in "${files[@]}"; do
         curl -s \
             -H "Authorization: token $GITHUB_TOKEN" \

@@ -1,5 +1,5 @@
-USERNAME ?= seanstone
-REPO ?= arch-on-github
+export USERNAME ?= seanstone
+export REPO ?= arch-on-github
 
 docker_run = docker run --rm --tty \
 	--mount=type=bind,source=$(shell pwd),destination=/home/builduser/ \
@@ -28,6 +28,6 @@ endif
 
 .PHONY: image
 image:
+	docker build --pull --tag=$(USERNAME)/$(REPO):latest --build-arg USERNAME=$(USERNAME) --build-arg REPO=$(REPO) - < Dockerfile
 	$(docker_login)
-	docker build --pull --tag=$(USERNAME)/$(REPO):latest - < Dockerfile
 	docker push $(USERNAME)/$(REPO):latest
