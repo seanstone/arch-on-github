@@ -127,4 +127,4 @@ if [ "$#" -ne 1 ]; then
 fi
 
 sudo pacman --noconfirm -Syu
-build_publish_install $@
+build_publish_install $1
