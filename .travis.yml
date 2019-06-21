@@ -11,6 +11,7 @@ sudo: required
 env:
   - DEP="gnuradio" PKG="libad9361-iio-git gnuradio-iio-git gnuradio-osmosdr-gqrx-git gqrx-git"
   - PKG="nlohmann-json-bin pothos-git"
+  - PKG="cadabra2"
 
 script: make
 
