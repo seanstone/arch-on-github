@@ -93,6 +93,7 @@ publish_package() {
         delete_asset $USERNAME.db
     fi
     repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
+    rm build/repo/$USERNAME.db
     cp build/repo/$USERNAME.db.tar.xz build/repo/$USERNAME.db
     upload_asset build/repo/$USERNAME.db
     sudo pacman -Syy
@@ -117,7 +118,8 @@ fold_end() {
 create_repo() {
     mkdir -p build/repo
     repo-add --new --remove build/repo/$USERNAME.db.tar.xz
-    sudo cp build/repo/$USERNAME.db.tar.xz build/repo/$USERNAME.db
+    rm build/repo/$USERNAME.db
+    cp build/repo/$USERNAME.db.tar.xz build/repo/$USERNAME.db
     upload_asset build/repo/$USERNAME.db
     sudo pacman -Syy
 }
