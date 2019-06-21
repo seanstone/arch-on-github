@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 export PKGDEST="$(pwd)/build/packages"
 export SRCDEST="$(pwd)/build/sources"
@@ -72,29 +71,32 @@ add_package_to_repo() {
     sudo cp build/repo/$USERNAME.db.tar.xz /var/lib/pacman/sync/$USERNAME.db
 }
 
+fetch_release_info() {
+    RELEASE_INFO=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
+    RELEASE_ID=$(echo $RELEASE_INFO | jq -r '.id')
+}
+
 delete_asset() {
-    local release=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
-    local ASSET_ID=$(echo $release | jq ".assets[] | select(.name|test(\"$1\")).id")
+    local ASSET_ID=$(echo $RELEASE_INFO | jq ".assets[] | select(.name|test(\"$1\")).id")
     if [[ ! -z "$ASSET_ID" ]]; then
         curl -H "Authorization: token $GITHUB_TOKEN" \
             -X DELETE https://api.github.com/repos/$USERNAME/$REPO/releases/assets/$ASSET_ID
     fi
 }
 
-publish_package() {
-    local release=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
-    local RELEASE_ID=$(echo $release | jq -r '.id')
-    
-    delete_asset "$1-.*.pkg.tar.xz"
-    delete_asset "$USERNAME.db"
+upload_asset() {
+    curl -s \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: $(file --mime-type -b $1)" \
+            --data-binary "@$1" \
+            "https://uploads.github.com/repos/$USERNAME/$REPO/releases/$RELEASE_ID/assets?name=$(basename $1)"
+}
 
+publish_package() {
     files=(build/packages/$1-*.pkg.tar.xz /var/lib/pacman/sync/$USERNAME.db)
     for f in "${files[@]}"; do
-        curl -s \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Content-Type: $(file --mime-type -b $f)" \
-            --data-binary "@$f" \
-            "https://uploads.github.com/repos/$USERNAME/$REPO/releases/$RELEASE_ID/assets?name=$(basename $f)"
+        delete_asset $(basename $f)
+        upload_asset $f
     done
 }
 
@@ -127,6 +129,19 @@ fi
 if [[ -z "$REPO" ]]; then
     echo "Error: REPO not specified" >&2
     exit 1
+fi
+
+fetch_release_info
+
+echo "[$USERNAME]
+SigLevel = Optional TrustAll
+Server = https://github.com/$USERNAME/$REPO/releases/download/latest" | sudo tee -a /etc/pacman.conf
+
+if ! sudo pacman -Syy; then
+    mkdir -p build/repo
+    repo-add --new --remove build/repo/$USERNAME.db.tar.xz
+    sudo cp build/repo/$USERNAME.db.tar.xz /var/lib/pacman/sync/$USERNAME.db
+    upload_asset /var/lib/pacman/sync/$USERNAME.db
 fi
 
 for dep in $DEP; do
