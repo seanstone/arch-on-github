@@ -30,6 +30,8 @@ build_package()
 
     mkdir -p "${PKGDEST}" "${SRCDEST}"
     (cd "build/snapshots/${package}" && makepkg --clean --force --noconfirm --syncdeps)
+
+    perl-rename 's/[?<>\\:*|\"]/./g' build/packages/$1-*.pkg.tar.xz
 }
 
 remote_exists() {

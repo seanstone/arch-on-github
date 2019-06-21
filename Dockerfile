@@ -9,7 +9,7 @@ RUN echo "Server = https://github.com/$USERNAME/$REPO/releases/download/latest" 
 
 RUN pacman --noconfirm -Syu
 
-RUN pacman --noconfirm -S base-devel jq
+RUN pacman --noconfirm -S base-devel jq perl-rename
 
 RUN useradd --create-home builduser && \
     echo 'builduser ALL=(ALL) NOPASSWD: ALL' \
