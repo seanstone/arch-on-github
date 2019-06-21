@@ -142,6 +142,7 @@ if ! sudo pacman -Syy; then
     repo-add --new --remove build/repo/$USERNAME.db.tar.xz
     sudo cp build/repo/$USERNAME.db.tar.xz /var/lib/pacman/sync/$USERNAME.db
     upload_asset /var/lib/pacman/sync/$USERNAME.db
+    sudo pacman -Syy
 fi
 
 for dep in $DEP; do
