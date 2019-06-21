@@ -1,9 +1,10 @@
 export USERNAME ?= seanstone
 export REPO ?= arch-on-github
+export DEP
 
 docker_run = docker run --rm --tty \
 	--mount=type=bind,source=$(shell pwd),destination=/home/builduser/ \
-	-e USERNAME=$(USERNAME) -e REPO=$(REPO) -e GITHUB_TOKEN=$(GITHUB_TOKEN) \
+	-e USERNAME=$(USERNAME) -e REPO=$(REPO) -e DEP=$(DEP) -e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 	$(USERNAME)/$(REPO):latest
 
 .PHONY: pkg

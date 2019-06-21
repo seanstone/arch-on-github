@@ -127,6 +127,10 @@ if [[ -z "$REPO" ]]; then
     exit 1
 fi
 
+for dep in $DEP; do
+    sudo pacman --noconfirm -S $dep
+done
+
 for pkg in $@; do
     fold_start $pkg
     sudo pacman --noconfirm -Syu

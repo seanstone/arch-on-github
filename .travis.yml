@@ -12,7 +12,7 @@ jobs:
   include:
     - stage: "gqrx"
       env:
-        - PKG="rtl-sdr-git libiio-git libad9361-iio-git gnuradio-iio-git libbladerf-git soapysdr-git gnuradio-osmosdr-gqrx-git gqrx-git"
+        - DEP="gnuradio" PKG="rtl-sdr-git libiio-git libad9361-iio-git gnuradio-iio-git libbladerf-git soapysdr-git gnuradio-osmosdr-gqrx-git gqrx-git"
       script: make
       
     - stage: "pothos"
