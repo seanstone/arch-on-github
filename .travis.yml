@@ -8,15 +8,9 @@ services:
   - docker
 sudo: required
 
-jobs:
-  include:
-    - stage: "gqrx"
-      env:
-        - DEP="gnuradio" PKG="libad9361-iio-git gnuradio-iio-git gnuradio-osmosdr-gqrx-git gqrx-git"
-      script: make
-      
-    - stage: "pothos"
-      env:
-        - PKG="nlohmann-json-bin pothos-git"
-      script: make
+env:
+  - DEP="gnuradio" PKG="libad9361-iio-git gnuradio-iio-git gnuradio-osmosdr-gqrx-git gqrx-git"
+  - PKG="nlohmann-json-bin pothos-git"
+
+script: make
 
