@@ -20,17 +20,16 @@ build_package()
     for dependency in $(get_dependencies "${package}"); do
         if ! pacman -Qi "$dependency" > /dev/null; then
             if ! package_in_official_repo $dependency; then
-                build_publish_install $dependency
-            else
-                sudo pacman --noconfirm -S $dependency
+                build_publish $dependency
             fi
+            sudo pacman --noconfirm -S $dependency
         fi
     done
 
     mkdir -p "${PKGDEST}" "${SRCDEST}"
     (cd "build/snapshots/${package}" && makepkg --clean --force --noconfirm --syncdeps)
 
-    perl-rename 's/[?<>\\:*|\"]/./g' build/packages/$1-*.pkg.tar.xz
+    #perl-rename 's/[?<>\\:*|\"]/./g' build/packages/$1-*.pkg.tar.xz
 }
 
 remote_exists() {
@@ -64,14 +63,6 @@ get_pgp_keys() {
         bash -c 'source PKGBUILD && echo ${validpgpkeys[@]}')
 }
 
-add_package_to_repo() {
-    mkdir -p build/repo
-    sudo pacman --noconfirm -Syu
-    cp /var/lib/pacman/sync/$USERNAME.db build/repo/$USERNAME.db.tar.xz
-    repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
-    sudo cp build/repo/$USERNAME.db.tar.xz /var/lib/pacman/sync/$USERNAME.db
-}
-
 fetch_release_info() {
     RELEASE_INFO=$(curl -X GET https://api.github.com/repos/$USERNAME/$REPO/releases/tags/latest)
     RELEASE_ID=$(echo $RELEASE_INFO | jq -r '.id')
@@ -96,19 +87,23 @@ upload_asset() {
 }
 
 publish_package() {
-    sudo pacman --noconfirm -Syu
-    files=(build/packages/$1-*.pkg.tar.xz /var/lib/pacman/sync/$USERNAME.db)
-    for f in "${files[@]}"; do
-        delete_asset $(basename $f)
-        upload_asset $f
-    done
+    mkdir -p build/repo
+    if sudo pacman -Syy; then
+        cp /var/lib/pacman/sync/$USERNAME.db build/repo/$USERNAME.db.tar.xz
+        delete_asset $USERNAME.db
+    fi
+    repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
+    cp build/repo/$USERNAME.db.tar.xz build/repo/$USERNAME.db
+    upload_asset build/repo/$USERNAME.db
+    sudo pacman -Syy
+
+    delete_asset $1-*.pkg.tar.xz
+    upload_asset build/packages/$1-*.pkg.tar.xz
 }
 
-build_publish_install() {
+build_publish() {
     build_package $1
-    add_package_to_repo $1
     publish_package $1
-    sudo pacman --noconfirm -U build/packages/$1-*.pkg.tar.xz
 }
 
 fold_start() {
@@ -119,6 +114,13 @@ fold_end() {
     echo -e "\ntravis_fold:end:$1\r"
 }
 
+create_repo() {
+    mkdir -p build/repo
+    repo-add --new --remove build/repo/$USERNAME.db.tar.xz
+    sudo cp build/repo/$USERNAME.db.tar.xz build/repo/$USERNAME.db
+    upload_asset build/repo/$USERNAME.db
+    sudo pacman -Syy
+}
 
 if [[ -z "$GITHUB_TOKEN" ]]; then
     echo "Error: GITHUB_TOKEN not provided" >&2
@@ -140,11 +142,7 @@ SigLevel = Optional TrustAll
 Server = https://github.com/$USERNAME/$REPO/releases/download/latest" | sudo tee -a /etc/pacman.conf
 
 if ! sudo pacman -Syy; then
-    mkdir -p build/repo
-    repo-add --new --remove build/repo/$USERNAME.db.tar.xz
-    sudo cp build/repo/$USERNAME.db.tar.xz /var/lib/pacman/sync/$USERNAME.db
-    upload_asset /var/lib/pacman/sync/$USERNAME.db
-    sudo pacman -Syy
+    create_repo
 fi
 
 sudo pacman --noconfirm -Syu
@@ -155,7 +153,7 @@ done
 
 for pkg in $@; do
     fold_start $pkg
-    build_publish_install $pkg
+    build_publish $pkg
     fold_end $pkg
 done
 
