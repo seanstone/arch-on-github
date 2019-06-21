@@ -21,12 +21,9 @@ build_package()
     for dependency in $(get_dependencies "${package}"); do
         if ! pacman -Qi "$dependency" > /dev/null; then
             if ! package_in_official_repo $dependency; then
-                build_package $dependency
-                install_package $dependency
-                add_package_to_repo $dependency
-                publish_package $dependency
+                build_publish_install $dependency
             else
-                install_package $dependency
+                sudo pacman --noconfirm -S $dependency
             fi
         fi
     done
@@ -66,14 +63,6 @@ get_pgp_keys() {
         bash -c 'source PKGBUILD && echo ${validpgpkeys[@]}')
 }
 
-install_package() {
-    if package_in_official_repo $1; then
-        sudo pacman --noconfirm -S $1
-    else
-        sudo pacman --noconfirm -U build/packages/$1-*.pkg.tar.xz
-    fi
-}
-
 add_package_to_repo() {
     mkdir -p build/repo
     cp /var/lib/pacman/sync/$USERNAME.db build/repo/$USERNAME.db.tar.xz
@@ -107,6 +96,13 @@ publish_package() {
     done
 }
 
+build_publish_install() {
+    build_package $1
+    add_package_to_repo $1
+    publish_package $1
+    sudo pacman --noconfirm -U build/packages/$1-*.pkg.tar.xz
+}
+
 USERNAME=seanstone
 REPO=arch-on-github
 
@@ -130,7 +126,5 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-#sudo pacman --noconfirm -Syu || true
-build_package "$@"
-add_package_to_repo "$@"
-publish_package "$@"
+sudo pacman --noconfirm -Syu
+build_publish_install $@
