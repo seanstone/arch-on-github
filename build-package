@@ -66,6 +66,7 @@ get_pgp_keys() {
 
 add_package_to_repo() {
     mkdir -p build/repo
+    sudo pacman --noconfirm -Syu
     cp /var/lib/pacman/sync/$USERNAME.db build/repo/$USERNAME.db.tar.xz
     repo-add --new --remove build/repo/$USERNAME.db.tar.xz build/packages/$1-*.pkg.tar.xz
     sudo cp build/repo/$USERNAME.db.tar.xz /var/lib/pacman/sync/$USERNAME.db
@@ -95,6 +96,7 @@ upload_asset() {
 }
 
 publish_package() {
+    sudo pacman --noconfirm -Syu
     files=(build/packages/$1-*.pkg.tar.xz /var/lib/pacman/sync/$USERNAME.db)
     for f in "${files[@]}"; do
         delete_asset $(basename $f)
@@ -145,13 +147,14 @@ if ! sudo pacman -Syy; then
     sudo pacman -Syy
 fi
 
+sudo pacman --noconfirm -Syu
+
 for dep in $DEP; do
     sudo pacman --noconfirm -S $dep
 done
 
 for pkg in $@; do
     fold_start $pkg
-    sudo pacman --noconfirm -Syu
     build_publish_install $pkg
     fold_end $pkg
 done
