@@ -77,6 +77,7 @@ fetch_release_info() {
 }
 
 delete_asset() {
+    fetch_release_info
     local ASSET_ID=$(echo $RELEASE_INFO | jq ".assets[] | select(.name|test(\"$1\")).id")
     if [[ ! -z "$ASSET_ID" ]]; then
         curl -H "Authorization: token $GITHUB_TOKEN" \
@@ -85,6 +86,7 @@ delete_asset() {
 }
 
 upload_asset() {
+    fetch_release_info
     curl -s \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: $(file --mime-type -b $1)" \
@@ -130,8 +132,6 @@ if [[ -z "$REPO" ]]; then
     echo "Error: REPO not specified" >&2
     exit 1
 fi
-
-fetch_release_info
 
 echo "[$USERNAME]
 SigLevel = Optional TrustAll
