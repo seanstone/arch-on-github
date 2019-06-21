@@ -103,8 +103,14 @@ build_publish_install() {
     sudo pacman --noconfirm -U build/packages/$1-*.pkg.tar.xz
 }
 
-USERNAME=seanstone
-REPO=arch-on-github
+fold_start() {
+    echo -e "travis_fold:start:$1\033[33;1m$2\033[0m"
+}
+
+fold_end() {
+    echo -e "\ntravis_fold:end:$1\r"
+}
+
 
 if [[ -z "$GITHUB_TOKEN" ]]; then
     echo "Error: GITHUB_TOKEN not provided" >&2
@@ -121,10 +127,10 @@ if [[ -z "$REPO" ]]; then
     exit 1
 fi
 
-if [ "$#" -ne 1 ]; then
-    echo "Error: Package not specified" >&2
-    exit 1
-fi
+for pkg in $@; do
+    fold_start $pkg
+    sudo pacman --noconfirm -Syu
+    build_publish_install $pkg
+    fold_end $pkg
+done
 
-sudo pacman --noconfirm -Syu
-build_publish_install $1
